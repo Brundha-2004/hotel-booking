@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels - Booking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        
+        .hotels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .hotel-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .hotel-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .hotel-info {
+            padding: 1.5rem;
+        }
+        
+        .hotel-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .hotel-location {
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hotel-description {
+            color: #777;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .hotel-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-book {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-book:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-book:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">🏨 HotelBooking</a>
+        <div class="nav-links">
+            <a href="hotel.html">Hotels</a>
+            <a href="#" id="loginLink">Login</a>
+            <a href="#" id="registerLink">Register</a>
+            <a href="#" id="logoutLink" style="display: none;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">Available Hotels</h1>
+        
+        <div id="messageContainer"></div>
+        
+        <div id="hotelsContainer" class="hotels-grid">
+            <div class="loading">Loading hotels...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8081/api';
+        let currentUser = null;
+
+        // Check authentication status
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('currentUser');
+            
+            if (token && user) {
+                currentUser = JSON.parse(user);
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('registerLink').style.display = 'none';
+                document.getElementById('logoutLink').style.display = 'block';
+            }
+        }
+
+        // Load hotels from API
+        async function loadHotels() {
+            try {
+                const response = await fetch(`${API_BASE}/hotels`);
+                if (!response.ok) throw new Error('Failed to load hotels');
+                
+                const hotels = await response.json();
+                displayHotels(hotels);
+            } catch (error) {
+                document.getElementById('hotelsContainer').innerHTML = 
+                    '<div class="error">Error loading hotels: ' + error.message + '</div>';
+            }
+        }
+
+        // Display hotels in the grid
+        function displayHotels(hotels) {
+            const container = document.getElementById('hotelsContainer');
+            
+            if (!hotels || hotels.length === 0) {
+                container.innerHTML = '<div class="loading">No hotels available</div>';
+                return;
+            }
+
+            container.innerHTML = hotels.map(hotel => `
+                <div class="hotel-card">
+                    <div class="hotel-image">
+                        🏨 ${hotel.name}
+                    </div>
+                    <div class="hotel-info">
+                        <h3 class="hotel-name">${hotel.name}</h3>
+                        <div class="hotel-location">📍 ${hotel.location}</div>
+                        <p class="hotel-description">${hotel.description || 'Luxury accommodation with premium amenities.'}</p>
+                        <div class="hotel-price">$${hotel.pricePerNight || '150'}/night</div>
+                        <button class="btn-book" onclick="bookHotel(${hotel.id})" 
+                                ${!currentUser ? 'disabled' : ''}>
+                            ${currentUser ? 'Book Now' : 'Login to Book'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Book hotel function
+        async function bookHotel(hotelId) {
+            if (!currentUser) {
+                showMessage('Please login to book a hotel', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        hotelId: hotelId,
+                        checkInDate: '2024-01-15',
+                        checkOutDate: '2024-01-20',
+                        guests: 2
+                    })
+                });
+
+                if (!response.ok) throw new Error('Booking failed');
+                
+                showMessage('Booking successful!', 'success');
+            } catch (error) {
+                showMessage('Booking failed: ' + error.message, 'error');
+            }
+        }
+
+        // Show message to user
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        // Event listeners
+        document.getElementById('loginLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'register.html';
+        });
+
+        document.getElementById('logoutLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            window.location.reload();
+        });
+
+        // Initialize
+        checkAuth();
+        loadHotels();
+    </script>
+</body>
+</html>

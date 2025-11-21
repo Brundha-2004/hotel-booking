@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxStay - Premium Hotel Booking</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            color: #1f2937;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover;
+            opacity: 0.2;
+        }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hotel-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .hotel-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="navbar fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-hotel text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold gradient-text">LuxStay</h1>
+                        <p class="text-xs text-gray-500">Premium Stays</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">Home</a>
+                    <a href="#hotels" class="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">Hotels</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">Destinations</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">Deals</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">Contact</a>
+                </div>
+
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="showLogin()" class="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200 hidden sm:block">
+                        Login
+                    </button>
+                    <button onclick="showRegister()" class="btn-primary text-white px-6 py-3 rounded-xl font-medium shadow-lg">
+                        Sign Up Free
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-7xl mx-auto text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Discover Your Perfect
+                <span class="gradient-text">Stay</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-purple-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Experience luxury and comfort with our curated collection of premium hotels worldwide. 
+                Book your dream vacation today with exclusive deals.
+            </p>
+            
+            <!-- Search Box -->
+            <div class="search-box rounded-2xl p-8 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">📍 Destination</label>
+                        <input type="text" placeholder="Where are you going?" 
+                               class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">📅 Check-in</label>
+                        <input type="date" 
+                               class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">📅 Check-out</label>
+                        <input type="date" 
+                               class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
+                    </div>
+                    <div class="flex items-end">
+                        <button class="btn-primary text-white w-full py-4 rounded-xl font-semibold text-lg">
+                            🔍 Search Hotels
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hotels Section -->
+    <section id="hotels" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Featured Hotels</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Handpicked selection of luxury accommodations with premium amenities and exceptional service</p>
+            </div>
+
+            <!-- Hotels Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Hotel Card 1 -->
+                <div class="hotel-card bg-white rounded-2xl shadow-lg">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&h=300&fit=crop" 
+                             alt="Grand Plaza Hotel" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 right-4 bg-white rounded-full px-3 py-2 flex items-center space-x-1 shadow-lg">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="font-semibold text-gray-800">4.5</span>
+                        </div>
+                        <div class="absolute bottom-4 left-4">
+                            <span class="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm font-medium">
+                                🏙️ Mumbai, India
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Grand Plaza Hotel</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Luxury 5-star hotel in the heart of Mumbai with panoramic city views and premium amenities.</p>
+                        
+                        <div class="flex items-center space-x-2 mb-6">
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-wifi mr-1"></i>Free WiFi
+                            </span>
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-swimming-pool mr-1"></i>Pool
+                            </span>
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-spa mr-1"></i>Spa
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-3xl font-bold text-gray-900">₹4,500</span>
+                                <span class="text-gray-600">/night</span>
+                            </div>
+                            <button class="btn-primary text-white px-6 py-3 rounded-xl font-semibold">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Card 2 -->
+                <div class="hotel-card bg-white rounded-2xl shadow-lg">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&h=300&fit=crop" 
+                             alt="Seaside Resort" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 right-4 bg-white rounded-full px-3 py-2 flex items-center space-x-1 shadow-lg">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="font-semibold text-gray-800">4.8</span>
+                        </div>
+                        <div class="absolute bottom-4 left-4">
+                            <span class="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm font-medium">
+                                🏖️ Goa, India
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Seaside Resort</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Beachfront luxury resort with private beach access and tropical gardens.</p>
+                        
+                        <div class="flex items-center space-x-2 mb-6">
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-wifi mr-1"></i>Free WiFi
+                            </span>
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-utensils mr-1"></i>Restaurant
+                            </span>
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-umbrella-beach mr-1"></i>Beach
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-3xl font-bold text-gray-900">₹6,200</span>
+                                <span class="text-gray-600">/night</span>
+                            </div>
+                            <button class="btn-primary text-white px-6 py-3 rounded-xl font-semibold">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Card 3 -->
+                <div class="hotel-card bg-white rounded-2xl shadow-lg">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500&h=300&fit=crop" 
+                             alt="Business Tower" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 right-4 bg-white rounded-full px-3 py-2 flex items-center space-x-1 shadow-lg">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="font-semibold text-gray-800">4.2</span>
+                        </div>
+                        <div class="absolute bottom-4 left-4">
+                            <span class="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm font-medium">
+                                🏢 Delhi, India
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Business Tower</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Modern business hotel with conference facilities and executive lounges.</p>
+                        
+                        <div class="flex items-center space-x-2 mb-6">
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-wifi mr-1"></i>Free WiFi
+                            </span>
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-dumbbell mr-1"></i>Gym
+                            </span>
+                            <span class="bg-purple-100 text-purple-600 px-3 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-briefcase mr-1"></i>Business
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-3xl font-bold text-gray-900">₹3,800</span>
+                                <span class="text-gray-600">/night</span>
+                            </div>
+                            <button class="btn-primary text-white px-6 py-3 rounded-xl font-semibold">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View More Button -->
+            <div class="text-center">
+                <button class="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold border-2 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-200 shadow-lg">
+                    View All 50+ Hotels
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Secure Booking</h3>
+                    <p class="text-gray-600 leading-relaxed">Your payments and personal data are protected with bank-level SSL encryption and secure payment gateways.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-tag text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Best Price Guarantee</h3>
+                    <p class="text-gray-600 leading-relaxed">Found a lower price? We'll match it and give you an additional 10% discount on your booking.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-headset text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">24/7 Support</h3>
+                    <p class="text-gray-600 leading-relaxed">Our dedicated support team is available round-the-clock to assist you with any queries or concerns.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer text-white py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-hotel text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold">LuxStay</h2>
+                            <p class="text-gray-300 text-sm">Premium Stays</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed mb-6">
+                        Experience luxury like never before with our premium hotel collection across 50+ destinations worldwide.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Press</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Gift Cards</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Support</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Cancellation Policy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Newsletter</h3>
+                    <p class="text-gray-300 mb-4">Subscribe for exclusive deals and travel inspiration</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email address" 
+                               class="flex-1 px-4 py-3 rounded-l-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500">
+                        <button class="bg-gradient-to-r from-purple-600 to-cyan-500 px-6 py-3 rounded-r-lg font-semibold hover:opacity-90 transition-opacity">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-600 pt-8 text-center">
+                <p class="text-gray-300">&copy; 2024 LuxStay. All rights reserved. | Premium Hotel Booking Experience</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl w-full max-w-md p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+                <p class="text-gray-600">Sign in to your LuxStay account</p>
+            </div>
+
+            <form class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" required 
+                           class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Enter your email">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <input type="password" required 
+                           class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Enter your password">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                        <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm text-purple-600 hover:text-purple-500 font-semibold">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-primary text-white w-full py-4 rounded-xl font-semibold text-lg">
+                    Sign In to LuxStay
+                </button>
+
+                <div class="text-center">
+                    <span class="text-gray-600">Don't have an account? </span>
+                    <button type="button" onclick="showRegister()" class="text-purple-600 hover:text-purple-500 font-semibold">
+                        Create one now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl w-full max-w-md p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Join LuxStay</h2>
+                <p class="text-gray-600">Create your account for the best booking experience</p>
+            </div>
+
+            <form class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                        <input type="text" required 
+                               class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                               placeholder="First name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                        <input type="text" required 
+                               class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Last name">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" required 
+                           class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Enter your email">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <input type="password" required 
+                           class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Create a password">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+                    <input type="password" required 
+                           class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Confirm your password">
+                </div>
+
+                <label class="flex items-start">
+                    <input type="checkbox" required class="mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                    <span class="ml-2 text-sm text-gray-600">
+                        I agree to the <a href="#" class="text-purple-600 hover:text-purple-500 font-semibold">Terms of Service</a> and <a href="#" class="text-purple-600 hover:text-purple-500 font-semibold">Privacy Policy</a>
+                    </span>
+                </label>
+
+                <button type="submit" class="btn-primary text-white w-full py-4 rounded-xl font-semibold text-lg">
+                    Create LuxStay Account
+                </button>
+
+                <div class="text-center">
+                    <span class="text-gray-600">Already have an account? </span>
+                    <button type="button" onclick="showLogin()" class="text-purple-600 hover:text-purple-500 font-semibold">
+                        Sign in here
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function showLogin() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('flex');
+            document.getElementById('registerModal').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('registerModal').classList.remove('hidden');
+            document.getElementById('registerModal').classList.add('flex');
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function closeModals() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('registerModal').classList.add('hidden');
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModals();
+        });
+
+        document.getElementById('registerModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModals();
+        });
+
+        // Form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Form submitted successfully!');
+                closeModals();
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                nav.classList.add('shadow-lg');
+            } else {
+                nav.classList.remove('shadow-lg');
+            }
+        });
+    </script>
+</body>
+</html>
