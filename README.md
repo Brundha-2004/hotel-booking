@@ -1,34 +1,46 @@
 # 🏨 Hotel Booking System
 
-A full-stack web application that allows users to search, book, and manage hotel rooms efficiently. The system includes user authentication, room management, and booking features.
+A full-stack **Hotel Booking System** built using **Java Spring Boot** that allows users to view available rooms and book them efficiently.  
+The application follows a clean **layered architecture** with RESTful APIs and MySQL database integration.
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
+
+### 👤 User
 - User registration and login
 - View available hotel rooms
 - Book rooms with check-in and check-out dates
-- Admin can add, update, and delete rooms
-- Secure backend with REST APIs
+- View booking details
+
+### 🛠️ Admin
+- Add new hotel rooms
+- Update existing room details
+- Delete rooms
+- Manage room availability
 
 ---
 
-## 🛠️ Tech Stack
-**Frontend:** HTML, CSS  
-**Backend:** Java, Spring Boot  
-**Database:** MySQL  
+## 🧰 Tech Stack
+
+- **Frontend:** HTML, CSS  
+- **Backend:** Java, Spring Boot  
+- **Database:** MySQL  
+- **API Style:** RESTful APIs  
+- **Build Tool:** Maven  
+
+---
+
+## 🏗️ Project Architecture
+
+The project follows a **layered architecture** for better maintainability and scalability:
+
+- **Controller Layer** – Handles HTTP requests and responses  
+- **Service Layer** – Contains business logic  
+- **Repository Layer** – Interacts with the database  
+- **Model Layer** – Entity and data models  
 
 ---
 
 ## 📂 Project Structure
-- Controller layer for handling requests
-- Service layer for business logic
-- Repository layer for database operations
-- RESTful APIs using Spring Boot
 
----
-
-## ▶️ How to Run the Project
-1. Clone the repository  
-   ```bash
-   git clone https://github.com/Brundha-2004/hotel-booking.git
